@@ -300,12 +300,12 @@ void C_Warning(char *string, ...)
     }
 }
 
-void C_PlayerMessage(dboolean external, char *string, ...)
+void C_PlayerMessage(char *string, ...)
 {
     va_list     argptr;
     char        buffer[CONSOLETEXTMAXLENGTH] = "";
-    dboolean    prevplayermessage = (consolestrings
-                    && console[consolestrings - 1].type == playermessagestring);
+    int         i = consolestrings - 1;
+    dboolean    prevplayermessage = (i >= 0 && console[i].type == playermessagestring);
     time_t      rawtime;
 
     va_start(argptr, string);
@@ -314,19 +314,18 @@ void C_PlayerMessage(dboolean external, char *string, ...)
 
     time(&rawtime);
 
-    if (prevplayermessage && M_StringCompare(console[consolestrings - 1].string, buffer))
+    if (prevplayermessage && M_StringCompare(console[i].string, buffer))
     {
-        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (2)", buffer);
-        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+        M_snprintf(console[i].string, CONSOLETEXTMAXLENGTH, "%s (2)", buffer);
+        strftime(console[i].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
-    else if (prevplayermessage && M_StringStartsWith(console[consolestrings - 1].string, buffer))
+    else if (prevplayermessage && M_StringStartsWith(console[i].string, buffer))
     {
-        char    *count = strrchr(console[consolestrings - 1].string, '(') + 1;
+        char    *count = strrchr(console[i].string, '(') + 1;
 
         count[strlen(count) - 1] = '\0';
-        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (%i)", buffer,
-            atoi(count) + 1);
-        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+        M_snprintf(console[i].string, CONSOLETEXTMAXLENGTH, "%s (%i)", buffer, atoi(count) + 1);
+        strftime(console[i].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
     else
     {
@@ -337,20 +336,14 @@ void C_PlayerMessage(dboolean external, char *string, ...)
         strftime(console[consolestrings++].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
     outputhistory = -1;
-
-    if (viewplayer && !consoleactive && !message_dontfuckwithme)
-    {
-        viewplayer->message = (vid_widescreen && r_althud ? console[consolestrings - 1].string :
-            buffer);
-        message_external = (external && mapwindow);
-    }
 }
 
 void C_Obituary(char *string, ...)
 {
     va_list     argptr;
     char        buffer[CONSOLETEXTMAXLENGTH] = "";
-    dboolean    prevobituary = (consolestrings && console[consolestrings - 1].type == obituarystring);
+    int         i = consolestrings - 1;
+    dboolean    prevobituary = (i >= 0 && console[i].type == obituarystring);
     time_t      rawtime;
 
     va_start(argptr, string);
@@ -359,19 +352,18 @@ void C_Obituary(char *string, ...)
 
     time(&rawtime);
 
-    if (prevobituary && M_StringCompare(console[consolestrings - 1].string, buffer))
+    if (prevobituary && M_StringCompare(console[i].string, buffer))
     {
-        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (2)", buffer);
-        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+        M_snprintf(console[i].string, CONSOLETEXTMAXLENGTH, "%s (2)", buffer);
+        strftime(console[i].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
-    else if (prevobituary && M_StringStartsWith(console[consolestrings - 1].string, buffer))
+    else if (prevobituary && M_StringStartsWith(console[i].string, buffer))
     {
-        char    *count = strrchr(console[consolestrings - 1].string, '(') + 1;
+        char    *count = strrchr(console[i].string, '(') + 1;
 
         count[strlen(count) - 1] = '\0';
-        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (%i)", buffer,
-            atoi(count) + 1);
-        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+        M_snprintf(console[i].string, CONSOLETEXTMAXLENGTH, "%s (%i)", buffer, atoi(count) + 1);
+        strftime(console[i].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
     else
     {
