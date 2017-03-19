@@ -179,6 +179,7 @@ extern dboolean         r_liquid_current;
 extern dboolean         r_liquid_lowerview;
 extern dboolean         r_liquid_swirl;
 extern char             *r_lowpixelsize;
+extern int              r_messagescale;
 extern dboolean         r_mirroredweapons;
 extern dboolean         r_playersprites;
 extern dboolean         r_rockettrails;
@@ -438,6 +439,8 @@ static dboolean r_gamma_cvar_func1(char *, char *);
 static void r_gamma_cvar_func2(char *, char *);
 static void r_hud_cvar_func2(char *, char *);
 static void r_lowpixelsize_cvar_func2(char *, char *);
+static dboolean r_messagescale_cvar_func1(char *, char *);
+static void r_messagescale_cvar_func2(char *, char *);
 static void r_screensize_cvar_func2(char *, char *);
 static dboolean r_skycolor_cvar_func1(char *, char *);
 static void r_skycolor_cvar_func2(char *, char *);
@@ -745,6 +748,8 @@ consolecmd_t consolecmds[] =
         "Toggles the swirl effect of liquid sectors."),
     CVAR_SIZE(r_lowpixelsize, "", null_func1, r_lowpixelsize_cvar_func2,
         "The size of the pixels when the graphic detail is low\n(<i>width</i><b>\xD7</b><i>height</i>)."),
+    CVAR_BOOL(r_messagescale, "", r_messagescale_cvar_func1, r_messagescale_cvar_func2, SCALEVALUEALIAS,
+        "The scale of messages (<b>big</b> or <b>small</b>)."),
     CVAR_BOOL(r_mirroredweapons, "", bool_cvars_func1, bool_cvars_func2, BOOLVALUEALIAS,
         "Toggles randomly mirroring the weapons dropped by\nmonsters."),
     CVAR_BOOL(r_playersprites, "", bool_cvars_func1, bool_cvars_func2, BOOLVALUEALIAS,
@@ -1644,12 +1649,12 @@ static void fastmonsters_cmd_func2(char *cmd, char *parms)
     if (fastparm)
     {
         G_SetFastMonsters(true);
-        HU_PlayerMessage(s_STSTR_FMON, false, false);
+        HU_PlayerMessage(s_STSTR_FMON, false);
     }
     else
     {
         G_SetFastMonsters(false);
-        HU_PlayerMessage(s_STSTR_FMOFF, false, false);
+        HU_PlayerMessage(s_STSTR_FMOFF, false);
     }
 }
 
@@ -1672,14 +1677,14 @@ static void freeze_cmd_func2(char *cmd, char *parms)
 
     if (freeze)
     {
-        HU_PlayerMessage(s_STSTR_FON, false, false);
+        HU_PlayerMessage(s_STSTR_FON, false);
 
         players[0].cheated++;
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
     }
     else
-        HU_PlayerMessage(s_STSTR_FOFF, false, false);
+        HU_PlayerMessage(s_STSTR_FOFF, false);
 
     C_HideConsole();
 }
@@ -2012,9 +2017,9 @@ static void kill_cmd_func2(char *cmd, char *parms)
 
             if (kills)
             {
-                M_snprintf(buffer, sizeof(buffer), "%s monster%s killed", commify(kills),
+                M_snprintf(buffer, sizeof(buffer), "%s monster%s killed.", commify(kills),
                     (kills == 1 ? "" : "s"));
-                C_Output("%s.", buffer);
+                C_Output("%s", buffer);
                 HU_SetPlayerMessage(buffer, false);
                 message_dontfuckwithme = true;
                 C_HideConsole();
@@ -2801,14 +2806,14 @@ static void noclip_cmd_func2(char *cmd, char *parms)
 
     if (player->cheats & CF_NOCLIP)
     {
-        HU_PlayerMessage(s_STSTR_NCON, false, false);
+        HU_PlayerMessage(s_STSTR_NCON, false);
 
         player->cheated++;
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
     }
     else
-        HU_PlayerMessage(s_STSTR_NCOFF, false, false);
+        HU_PlayerMessage(s_STSTR_NCOFF, false);
 }
 
 //
@@ -2830,14 +2835,14 @@ static void nomonsters_cmd_func2(char *cmd, char *parms)
 
     if (nomonsters)
     {
-        HU_PlayerMessage(s_STSTR_NMON, false, false);
+        HU_PlayerMessage(s_STSTR_NMON, false);
 
         players[0].cheated++;
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
     }
     else
-        HU_PlayerMessage(s_STSTR_NMOFF, false, false);
+        HU_PlayerMessage(s_STSTR_NMOFF, false);
 }
 
 //
@@ -2885,10 +2890,10 @@ static void notarget_cmd_func2(char *cmd, char *parms)
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
 
-        HU_PlayerMessage(s_STSTR_NTON, false, false);
+        HU_PlayerMessage(s_STSTR_NTON, false);
     }
     else
-        HU_PlayerMessage(s_STSTR_NTOFF, false, false);
+        HU_PlayerMessage(s_STSTR_NTOFF, false);
 }
 
 //
@@ -2908,7 +2913,7 @@ static void pistolstart_cmd_func2(char *cmd, char *parms)
     else
         pistolstart = !pistolstart;
 
-    HU_PlayerMessage((pistolstart ? s_STSTR_PSON : s_STSTR_PSOFF), false, false);
+    HU_PlayerMessage((pistolstart ? s_STSTR_PSON : s_STSTR_PSOFF), false);
 }
 
 //
@@ -3453,14 +3458,14 @@ static void regenhealth_cmd_func2(char *cmd, char *parms)
 
     if (regenhealth)
     {
-        HU_PlayerMessage(s_STSTR_RHON, false, false);
+        HU_PlayerMessage(s_STSTR_RHON, false);
 
         players[0].cheated++;
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
     }
     else
-        HU_PlayerMessage(s_STSTR_RHOFF, false, false);
+        HU_PlayerMessage(s_STSTR_RHOFF, false);
 }
 
 //
@@ -3482,14 +3487,14 @@ static void respawnitems_cmd_func2(char *cmd, char *parms)
 
     if (respawnitems)
     {
-        HU_PlayerMessage(s_STSTR_RION, false, false);
+        HU_PlayerMessage(s_STSTR_RION, false);
 
         players[0].cheated++;
         stat_cheated = SafeAdd(stat_cheated, 1);
         M_SaveCVARs();
     }
     else
-        HU_PlayerMessage(s_STSTR_RIOFF, false, false);
+        HU_PlayerMessage(s_STSTR_RIOFF, false);
 }
 
 //
@@ -3514,7 +3519,7 @@ static void respawnmonsters_cmd_func2(char *cmd, char *parms)
     else
         respawnmonsters = !respawnmonsters;
 
-    HU_PlayerMessage((respawnmonsters ? s_STSTR_RMON : s_STSTR_RMOFF), false, false);
+    HU_PlayerMessage((respawnmonsters ? s_STSTR_RMON : s_STSTR_RMOFF), false);
 }
 
 //
@@ -3798,14 +3803,14 @@ static void vanilla_cmd_func2(char *cmd, char *parms)
                 C_ValidateInput(M_StringJoin(cvar, " ", sc_String, NULL));
         }
 
-        HU_PlayerMessage(s_STSTR_VMON, false, false);
+        HU_PlayerMessage(s_STSTR_VMON, false);
         C_HideConsole();
     }
     else
     {
         M_LoadCVARs(packageconfig);
 
-        HU_PlayerMessage(s_STSTR_VMOFF, false, false);
+        HU_PlayerMessage(s_STSTR_VMOFF, false);
         C_HideConsole();
     }
     togglingvanilla = false;
@@ -4288,8 +4293,8 @@ static void player_cvars_func2(char *cmd, char *parms)
         {
             sscanf(parms, "%10i", &value);
 
-            if (value != player->ammo[ammotype] && player->playerstate == PST_LIVE
-                && ammotype != am_noammo)
+            if (ammotype != am_noammo && value != player->ammo[ammotype]
+                && player->playerstate == PST_LIVE)
             {
                 if (value > player->ammo[ammotype])
                     P_AddBonus(player, BONUSADD);
@@ -4438,7 +4443,7 @@ static void r_detail_cvar_func2(char *cmd, char *parms)
     {
         int     value = C_LookupValueFromAlias(parms, DETAILVALUEALIAS);
 
-        if ((value == 0 || value == 1) && r_detail != value)
+        if ((value == r_detail_low || value == r_detail_high) && r_detail != value)
         {
             r_detail = !!value;
             M_SaveCVARs();
@@ -4561,6 +4566,39 @@ static void r_lowpixelsize_cvar_func2(char *cmd, char *parms)
         else
             C_Output("It is currently set to <b>%s</b> and its default is <b>%s</b>.",
                 formatsize(r_lowpixelsize), formatsize(r_lowpixelsize_default));
+    }
+}
+
+//
+// r_messagescale CVAR
+//
+static dboolean r_messagescale_cvar_func1(char *cmd, char *parms)
+{
+    return (!*parms || C_LookupValueFromAlias(parms, SCALEVALUEALIAS) != INT_MIN);
+}
+
+static void r_messagescale_cvar_func2(char *cmd, char *parms)
+{
+    if (*parms)
+    {
+        int     value = C_LookupValueFromAlias(parms, SCALEVALUEALIAS);
+
+        if ((value == r_messagescale_small || value == r_messagescale_big) && r_messagescale != value)
+        {
+            r_messagescale = !!value;
+            M_SaveCVARs();
+        }
+    }
+    else
+    {
+        C_Output(removenewlines(consolecmds[C_GetIndex(stringize(r_messagescale))].description));
+        if (r_messagescale == r_messagescale_default)
+            C_Output("It is currently set to its default of <b>%s</b>.",
+                C_LookupAliasFromValue(r_messagescale, SCALEVALUEALIAS));
+        else
+            C_Output("It is currently set to <b>%s</b> and its default is <b>%s</b>.",
+                C_LookupAliasFromValue(r_messagescale, SCALEVALUEALIAS),
+                C_LookupAliasFromValue(r_messagescale_default, SCALEVALUEALIAS));
     }
 }
 

@@ -342,8 +342,8 @@ void R_ClearSprites(void)
     if (num_vissprite >= num_vissprite_alloc)
     {
         num_vissprite_alloc += 256;
-        vissprites = realloc(vissprites, num_vissprite_alloc * sizeof(vissprite_t));
-        vissprite_ptrs = realloc(vissprite_ptrs, num_vissprite_alloc * sizeof(vissprite_t *));
+        vissprites = Z_Realloc(vissprites, num_vissprite_alloc * sizeof(vissprite_t));
+        vissprite_ptrs = Z_Realloc(vissprite_ptrs, num_vissprite_alloc * sizeof(vissprite_t *));
     }
 
     num_vissprite = 0;
@@ -447,10 +447,10 @@ int             *mfloorclip;
 int             *mceilingclip;
 
 fixed_t         spryscale;
-int             sprtopscreen;
+int64_t         sprtopscreen;
 int             fuzzpos;
 
-static int      shift;
+static int64_t  shift;
 
 static void R_BlastSpriteColumn(column_t *column)
 {
@@ -463,10 +463,10 @@ static void R_BlastSpriteColumn(column_t *column)
         const int       length = column->length;
 
         // calculate unclipped screen coordinates for post
-        const int       topscreen = sprtopscreen + spryscale * topdelta + 1;
+        const int64_t   topscreen = sprtopscreen + spryscale * topdelta + 1;
 
-        dc_yl = MAX((topscreen + FRACUNIT) >> FRACBITS, ceilingclip);
-        dc_yh = MIN((topscreen + spryscale * length) >> FRACBITS, floorclip);
+        dc_yl = MAX((int)((topscreen + FRACUNIT) >> FRACBITS), ceilingclip);
+        dc_yh = MIN((int)((topscreen + spryscale * length) >> FRACBITS), floorclip);
 
         if (dc_baseclip != -1)
             dc_yh = MIN(dc_baseclip, dc_yh);
@@ -495,10 +495,10 @@ static void R_BlastBloodSplatColumn(column_t *column)
         const int       length = column->length;
 
         // calculate unclipped screen coordinates for post
-        const int       topscreen = sprtopscreen + spryscale * topdelta + 1;
+        const int64_t   topscreen = sprtopscreen + spryscale * topdelta + 1;
 
-        dc_yl = MAX(topscreen >> FRACBITS, ceilingclip);
-        dc_yh = MIN((topscreen + spryscale * length) >> FRACBITS, floorclip);
+        dc_yl = MAX((int)((topscreen + FRACUNIT) >> FRACBITS), ceilingclip);
+        dc_yh = MIN((int)((topscreen + spryscale * length) >> FRACBITS), floorclip);
 
         if (dc_yl <= dc_yh)
             colfunc();
@@ -518,10 +518,10 @@ static void R_BlastShadowColumn(column_t *column)
         const int       length = column->length;
 
         // calculate unclipped screen coordinates for post
-        const int       topscreen = sprtopscreen + spryscale * topdelta + 1;
+        const int64_t   topscreen = sprtopscreen + spryscale * topdelta + 1;
 
-        dc_yl = MAX((topscreen >> FRACBITS) / 10 + shift, ceilingclip);
-        dc_yh = MIN(((topscreen + spryscale * length) >> FRACBITS) / 10 + shift, floorclip);
+        dc_yl = MAX((int)(((topscreen + FRACUNIT) >> FRACBITS) / 10 + shift), ceilingclip);
+        dc_yh = MIN((int)(((topscreen + spryscale * length) >> FRACBITS) / 10 + shift), floorclip);
 
         if (dc_yl <= dc_yh)
             colfunc();
@@ -552,7 +552,6 @@ void R_DrawVisSprite(vissprite_t *vis)
 
         if (!sector->isliquid)
         {
-            dc_colormap = vis->shadowcolormap;
             colfunc = mobj->shadowcolfunc;
             sprtopscreen = centeryfrac - FixedMul(sector->interpfloorheight
                 + mobj->info->shadowoffset - viewz, spryscale);
@@ -592,8 +591,8 @@ void R_DrawVisSprite(vissprite_t *vis)
     }
 
     if (vis->footclip)
-        dc_baseclip = (sprtopscreen + FixedMul(SHORT(((patch_t *)patch)->height) << FRACBITS, spryscale)
-            - FixedMul(vis->footclip, spryscale)) >> FRACBITS;
+        dc_baseclip = ((int)sprtopscreen + FixedMul(SHORT(((patch_t *)patch)->height) << FRACBITS,
+            spryscale) - FixedMul(vis->footclip, spryscale)) >> FRACBITS;
     else
         dc_baseclip = -1;
 
@@ -870,13 +869,12 @@ void R_ProjectSprite(mobj_t *thing)
     vis->patch = lump;
 
     // get light level
-    vis->shadowcolormap = spritelights[BETWEEN(0, xscale >> LIGHTSCALESHIFT, MAXLIGHTSCALE - 1)];
     if (fixedcolormap)
         vis->colormap = fixedcolormap;          // fixed map
     else if ((frame & FF_FULLBRIGHT) && (rot <= 4 || rot >= 12 || thing->info->fullbright))
         vis->colormap = fullcolormap;           // full bright
     else                                        // diminished light
-        vis->colormap = vis->shadowcolormap;
+        vis->colormap = spritelights[BETWEEN(0, xscale >> LIGHTSCALESHIFT, MAXLIGHTSCALE - 1)];
 }
 
 static void R_ProjectBloodSplat(bloodsplat_t *splat)

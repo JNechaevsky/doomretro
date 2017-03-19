@@ -91,11 +91,12 @@ int             consoleanim;
 
 dboolean        forceconsoleblurredraw;
 
-static patch_t  *consolefont[CONSOLEFONTSIZE];
+patch_t         *consolefont[CONSOLEFONTSIZE];
+patch_t         *degree;
+
 static patch_t  *trademark;
 static patch_t  *copyright;
 static patch_t  *regomark;
-static patch_t  *degree;
 static patch_t  *multiply;
 static patch_t  *warning;
 static patch_t  *brand;
@@ -175,9 +176,12 @@ static int      consolecolors[STRINGTYPES];
 
 extern int      fps;
 extern int      refreshrate;
+extern dboolean r_althud;
 extern dboolean r_translucency;
 extern dboolean vanilla;
 extern dboolean togglingvanilla;
+extern dboolean message_external;
+extern dboolean message_dontfuckwithme;
 
 void G_ToggleAlwaysRun(evtype_t type);
 
@@ -296,7 +300,7 @@ void C_Warning(char *string, ...)
     }
 }
 
-void C_PlayerMessage(char *string, ...)
+void C_PlayerMessage(dboolean external, char *string, ...)
 {
     va_list     argptr;
     char        buffer[CONSOLETEXTMAXLENGTH] = "";
@@ -329,6 +333,51 @@ void C_PlayerMessage(char *string, ...)
         console = Z_Realloc(console, (consolestrings + 1) * sizeof(*console));
         M_StringCopy(console[consolestrings].string, buffer, CONSOLETEXTMAXLENGTH);
         console[consolestrings].type = playermessagestring;
+        memset(console[consolestrings].tabs, 0, sizeof(console[consolestrings].tabs));
+        strftime(console[consolestrings++].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+    }
+    outputhistory = -1;
+
+    if (viewplayer && !consoleactive && !message_dontfuckwithme)
+    {
+        viewplayer->message = (vid_widescreen && r_althud ? console[consolestrings - 1].string :
+            buffer);
+        message_external = (external && mapwindow);
+    }
+}
+
+void C_Obituary(char *string, ...)
+{
+    va_list     argptr;
+    char        buffer[CONSOLETEXTMAXLENGTH] = "";
+    dboolean    prevobituary = (consolestrings && console[consolestrings - 1].type == obituarystring);
+    time_t      rawtime;
+
+    va_start(argptr, string);
+    M_vsnprintf(buffer, CONSOLETEXTMAXLENGTH - 1, string, argptr);
+    va_end(argptr);
+
+    time(&rawtime);
+
+    if (prevobituary && M_StringCompare(console[consolestrings - 1].string, buffer))
+    {
+        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (2)", buffer);
+        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+    }
+    else if (prevobituary && M_StringStartsWith(console[consolestrings - 1].string, buffer))
+    {
+        char    *count = strrchr(console[consolestrings - 1].string, '(') + 1;
+
+        count[strlen(count) - 1] = '\0';
+        M_snprintf(console[consolestrings - 1].string, CONSOLETEXTMAXLENGTH, "%s (%i)", buffer,
+            atoi(count) + 1);
+        strftime(console[consolestrings - 1].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
+    }
+    else
+    {
+        console = Z_Realloc(console, (consolestrings + 1) * sizeof(*console));
+        M_StringCopy(console[consolestrings].string, buffer, CONSOLETEXTMAXLENGTH);
+        console[consolestrings].type = obituarystring;
         memset(console[consolestrings].tabs, 0, sizeof(console[consolestrings].tabs));
         strftime(console[consolestrings++].timestamp, 9, "%H:%M:%S", localtime(&rawtime));
     }
@@ -384,19 +433,19 @@ static struct
     { 'd',  'j',  -2 }, { 'e',  '\\', -1 }, { 'e',  ',',  -1 }, { 'e',  ';',  -1 },
     { 'e',  '\"', -1 }, { 'e',  '\'', -1 }, { 'e',  '_',  -1 }, { 'e',  'j',  -2 },
     { 'f',  ' ',  -1 }, { 'f',  ',',  -2 }, { 'f',  ';',  -1 }, { 'f',  '_',  -1 },
-    { 'f',  'a',  -1 }, { 'f',  'j',  -2 }, { 'h',  '\\', -1 }, { 'h',  '\"', -1 },
-    { 'h',  '\'', -1 }, { 'h',  'j',  -2 }, { 'i',  'j',  -2 }, { 'k',  'j',  -2 },
-    { 'l',  'j',  -2 }, { 'm',  '\"', -1 }, { 'm',  '\\', -1 }, { 'm',  '\'', -1 },
-    { 'm',  'j',  -2 }, { 'n',  '\\', -1 }, { 'n',  '\"', -1 }, { 'n',  '\'', -1 },
-    { 'n',  'j',  -2 }, { 'o',  '\\', -1 }, { 'o',  ',',  -1 }, { 'o',  ';',  -1 },
-    { 'o',  '\"', -1 }, { 'o',  '\'', -1 }, { 'o',  'j',  -2 }, { 'p',  '\\', -1 },
-    { 'p',  ',',  -1 }, { 'p',  ';',  -1 }, { 'p',  '\"', -1 }, { 'p',  '\'', -1 },
-    { 'p',  'j',  -2 }, { 'r',  ' ',  -1 }, { 'r',  '\\', -1 }, { 'r',  '.',  -2 },
-    { 'r',  ',',  -2 }, { 'r',  ';',  -1 }, { 'r',  '\"', -1 }, { 'r',  '\'', -1 },
-    { 'r',  '_',  -1 }, { 'r',  'a',  -1 }, { 'r',  'j',  -2 }, { 's',  '\\', -1 },
-    { 's',  ',',  -1 }, { 's',  ';',  -1 }, { 's',  'j',  -2 }, { 't',  'j',  -2 },
-    { 'u',  'j',  -2 }, { 'v',  ',',  -1 }, { 'v',  ';',  -1 }, { 'v',  'j',  -2 },
-    { 'w',  'j',  -2 }, { 'x',  'j',  -2 }, { 'z',  'j',  -2 }, {  0 ,   0 ,   0 }
+    { 'f',  'a',  -1 }, { 'f',  'j',  -2 }, { 'h',  '\\', -1 }, { 'h',  'j',  -2 },
+    { 'i',  'j',  -2 }, { 'k',  'j',  -2 }, { 'l',  'j',  -2 }, { 'm',  '\"', -1 },
+    { 'm',  '\\', -1 }, { 'm',  '\'', -1 }, { 'm',  'j',  -2 }, { 'n',  '\\', -1 },
+    { 'n',  '\"', -1 }, { 'n',  '\'', -1 }, { 'n',  'j',  -2 }, { 'o',  '\\', -1 },
+    { 'o',  ',',  -1 }, { 'o',  ';',  -1 }, { 'o',  '\"', -1 }, { 'o',  '\'', -1 },
+    { 'o',  'j',  -2 }, { 'p',  '\\', -1 }, { 'p',  ',',  -1 }, { 'p',  ';',  -1 },
+    { 'p',  '\"', -1 }, { 'p',  '\'', -1 }, { 'p',  'j',  -2 }, { 'r',  ' ',  -1 },
+    { 'r',  '\\', -1 }, { 'r',  '.',  -2 }, { 'r',  ',',  -2 }, { 'r',  ';',  -1 },
+    { 'r',  '\"', -1 }, { 'r',  '\'', -1 }, { 'r',  '_',  -1 }, { 'r',  'a',  -1 },
+    { 'r',  'j',  -2 }, { 's',  '\\', -1 }, { 's',  ',',  -1 }, { 's',  ';',  -1 },
+    { 's',  'j',  -2 }, { 't',  'j',  -2 }, { 'u',  'j',  -2 }, { 'v',  ',',  -1 },
+    { 'v',  ';',  -1 }, { 'v',  'j',  -2 }, { 'w',  'j',  -2 }, { 'x',  'j',  -2 },
+    { 'z',  'j',  -2 }, {  0 ,   0 ,   0 }
 };
 
 static int C_TextWidth(char *text, dboolean formatting)
@@ -560,6 +609,7 @@ void C_Init(void)
     consolecolors[titlestring] = consoletitlecolor;
     consolecolors[warningstring] = consolewarningcolor;
     consolecolors[playermessagestring] = consoleplayermessagecolor;
+    consolecolors[obituarystring] = consoleplayermessagecolor;
 }
 
 void C_ShowConsole(void)
@@ -715,11 +765,19 @@ static void C_DrawConsoleText(int x, int y, char *text, int color1, int color2, 
     int                 tab = -1;
     size_t              len = strlen(text);
     unsigned char       prevletter = '\0';
+    int                 width = 0;
 
     y -= CONSOLEHEIGHT - consoleheight;
 
+    if (color1 == consolewarningcolor)
+    {
+        V_DrawConsoleTextPatch(x, y, warning, color1, color2, false, tinttab);
+        width = SHORT(warning->width) + 2;
+        x += width;
+    }
+
     if (len > 80)
-        while (C_TextWidth(text, formatting) > CONSOLETEXTPIXELWIDTH)
+        while (C_TextWidth(text, formatting) + width > CONSOLETEXTPIXELWIDTH)
         {
             text[len - 1] = '.';
             text[len] = '.';
@@ -727,12 +785,6 @@ static void C_DrawConsoleText(int x, int y, char *text, int color1, int color2, 
             text[len + 2] = '\0';
             len--;
         }
-
-    if (color1 == consolewarningcolor)
-    {
-        V_DrawConsoleTextPatch(x, y, warning, color1, color2, false, tinttab);
-        x += SHORT(warning->width) + 2;
-    }
 
     for (i = 0; i < len; i++)
     {

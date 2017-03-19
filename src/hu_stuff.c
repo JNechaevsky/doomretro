@@ -605,7 +605,7 @@ static patch_t  *altmark2patch;
 static patch_t  *altkeypatch;
 static patch_t  *altskullpatch;
 
-static int      white;
+int             white;
 static int      lightgray;
 static int      gray;
 static int      darkgray;
@@ -1008,10 +1008,9 @@ void HU_SetPlayerMessage(char *message, dboolean external)
     message_external = (external && mapwindow);
 }
 
-void HU_PlayerMessage(char *message, dboolean ingame, dboolean external)
+void HU_PlayerMessage(char *message, dboolean external)
 {
     static char buffer[1024];
-    char        lastchar;
 
     if (message[0] == '%' && message[1] == 's')
         M_snprintf(buffer, sizeof(buffer), message, playername);
@@ -1019,17 +1018,8 @@ void HU_PlayerMessage(char *message, dboolean ingame, dboolean external)
         M_StringCopy(buffer, message, sizeof(buffer));
 
     buffer[0] = toupper(buffer[0]);
-    lastchar = buffer[strlen(buffer) - 1];
 
-    if (plr && !consoleactive && !message_dontfuckwithme)
-        HU_SetPlayerMessage(buffer, external);
-
-    if (ingame)
-        C_PlayerMessage("%s%s", buffer,
-            (lastchar == '.' || lastchar == '!' || lastchar == '\"' ? "" : "."));
-    else
-        C_Output("%s%s", buffer,
-            (lastchar == '.' || lastchar == '!' || lastchar == '\"' ? "" : "."));
+    C_PlayerMessage(external, buffer);
 }
 
 void HU_ClearMessages(void)

@@ -448,7 +448,7 @@ void R_InitSpriteLumps(void)
             spritetopoffset[i] = newspritetopoffset[i] = SHORT(patch->topoffset) << FRACBITS;
 
             // [BH] override sprite offsets in WAD with those in sproffsets[] in info.c
-            if (r_fixspriteoffsets && !FREEDOOM && !hacx && !BTSX && !sprfix18)
+            if (r_fixspriteoffsets && !FREEDOOM && !hacx)
             {
                 int     j = 0;
 
@@ -456,7 +456,8 @@ void R_InitSpriteLumps(void)
                 {
                     if (i == W_CheckNumForName(sproffsets[j].name) - firstspritelump
                         && spritewidth[i] == (SHORT(sproffsets[j].width) << FRACBITS)
-                        && spriteheight[i] == (SHORT(sproffsets[j].height) << FRACBITS))
+                        && spriteheight[i] == (SHORT(sproffsets[j].height) << FRACBITS)
+                        && ((!BTSX && !sprfix18) || sproffsets[j].sprfix18))
                     {
                         newspriteoffset[i] = SHORT(sproffsets[j].x) << FRACBITS;
                         newspritetopoffset[i] = SHORT(sproffsets[j].y) << FRACBITS;
@@ -590,7 +591,7 @@ void R_InitColormaps(void)
 // killough 4/11/98: changed to return -1 for illegal names
 int R_ColormapNumForName(char *name)
 {
-    register int i = 0;
+    int i = 0;
 
     if (numcolormaps == 1)
         return -1;

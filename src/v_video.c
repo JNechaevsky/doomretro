@@ -57,6 +57,7 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+#define BLACK   0
 #define WHITE   4
 
 // Each screen is [SCREENWIDTH * SCREENHEIGHT];
@@ -71,6 +72,7 @@ char            *r_lowpixelsize = r_lowpixelsize_default;
 char            screenshotfolder[MAX_PATH];
 
 extern dboolean r_translucency;
+extern dboolean vanilla;
 
 //
 // V_CopyRect
@@ -526,8 +528,79 @@ void V_DrawPatchToTempScreen(int x, int y, patch_t *patch)
             {
                 *dest = source[srccol >> FRACBITS];
                 dest += SCREENWIDTH;
-                *(dest + SCREENWIDTH + 2) = 0;
+                if (!vanilla)
+                    *(dest + SCREENWIDTH + 2) = BLACK;
                 srccol += DYI;
+            }
+
+            column = (column_t *)((byte *)column + column->length + 4);
+        }
+    }
+}
+
+void V_DrawBigPatchToTempScreen(int x, int y, patch_t *patch)
+{
+    int         col = 0;
+    byte        *desttop;
+    int         w = SHORT(patch->width);
+
+    y -= SHORT(patch->topoffset);
+    x -= SHORT(patch->leftoffset);
+
+    desttop = tempscreen + y * SCREENWIDTH + x;
+
+    for (; col < w; col++, desttop++)
+    {
+        column_t        *column = (column_t *)((byte *)patch + LONG(patch->columnofs[col]));
+        int             td;
+        int             topdelta = -1;
+        int             lastlength = 0;
+
+        // step through the posts in a column
+        while ((td = column->topdelta) != 0xFF)
+        {
+            byte        *source = (byte *)column + 3;
+            byte        *dest;
+            int         count;
+
+            topdelta = (td < topdelta + lastlength - 1 ? topdelta + td : td);
+            dest = desttop + topdelta * SCREENWIDTH;
+            count = lastlength = column->length;
+
+            while (count--)
+            {
+                *dest = *source++;
+                dest += SCREENWIDTH;
+                *(dest + 1) = BLACK;
+            }
+            column = (column_t *)((byte *)column + column->length + 4);
+        }
+    }
+}
+
+void V_DrawAltHUDText(int x, int y, patch_t *patch, int color)
+{
+    int         col = 0;
+    byte        *desttop = screens[0] + y * SCREENWIDTH + x;
+    int         w = SHORT(patch->width);
+
+    for (; col < w; col++, desttop++)
+    {
+        column_t        *column = (column_t *)((byte *)patch + LONG(patch->columnofs[col]));
+        int             topdelta;
+
+        // step through the posts in a column
+        while ((topdelta = column->topdelta) != 0xFF)
+        {
+            byte        *source = (byte *)column + 3;
+            byte        *dest = desttop + topdelta * SCREENWIDTH;
+            int         count = column->length;
+
+            while (count--)
+            {
+                if (*source++ == WHITE)
+                    *dest = tinttab60[(*dest << 8) + color];
+                dest += SCREENWIDTH;
             }
 
             column = (column_t *)((byte *)column + column->length + 4);
@@ -1281,7 +1354,7 @@ void V_DrawPixel(int x, int y, byte color, dboolean shadow)
             {
                 for (yy = 0; yy < SCREENSCALE; yy++)
                     for (xx = 0; xx < SCREENSCALE; xx++)
-                        *(dest + yy * SCREENWIDTH + xx) = 0;
+                        *(dest + yy * SCREENWIDTH + xx) = BLACK;
             }
         }
     }
