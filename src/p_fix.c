@@ -185,6 +185,12 @@ linefix_t linefix[] =
     { doom,             2,   6,     499,    0, "",         "",            "",                  8,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { doom,             2,   6,     501,    0, "",         "",            "",                 10,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { doom,             2,   6,     620,    0, "",         "",            "",            DEFAULT,   DEFAULT, DEFAULT,                   DR_Door_Yellow_OpenWaitClose,               DEFAULT },
+    { doom,             2,   6,     747,    0, "",         "",            "",                 -2,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
+    { doom,             2,   6,     750,    0, "",         "",            "",                 -2,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
+    { doom,             2,   6,     756,    0, "",         "",            "",                 -1,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
+    { doom,             2,   6,     757,    0, "",         "",            "",                 -1,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
+    { doom,             2,   6,     758,    0, "",         "",            "",                 -1,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
+    { doom,             2,   6,     779,    0, "",         "",            "",                 -1,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { doom,             2,   6,    1091,    1, "COMPSPAN", "",            "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
 
     { doom,             2,   7,     193,    1, "BROWNHUG", "",            "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
