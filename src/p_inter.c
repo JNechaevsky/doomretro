@@ -290,8 +290,8 @@ dboolean P_GiveFullAmmo(player_t *player)
 
         return true;
     }
-    else
-        return false;
+
+    return false;
 }
 
 //
@@ -299,8 +299,7 @@ dboolean P_GiveFullAmmo(player_t *player)
 //
 void P_AddBonus(player_t *player, int amount)
 {
-    if (!consoleactive)
-        player->bonuscount = MIN(player->bonuscount + amount, 3 * TICRATE);
+    player->bonuscount = MIN(player->bonuscount + amount, 3 * TICRATE);
 }
 
 //
@@ -331,8 +330,8 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
 
         return true;
     }
-    else
-        return (gaveweapon || gaveammo);
+
+    return (gaveweapon || gaveammo);
 }
 
 //
@@ -1477,9 +1476,11 @@ void P_DamageMobj(mobj_t *target, mobj_t *inflicter, mobj_t *source, int damage,
         }
     }
 
-    if (M_Random() < info->painchance && !(flags & MF_SKULLFLY))
+    if (M_Random() < info->painchance)
     {
         target->flags |= MF_JUSTHIT;                            // fight back!
+
+        target->flags &= ~MF_SKULLFLY;
 
         P_SetMobjState(target, info->painstate);
     }

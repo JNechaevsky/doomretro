@@ -292,7 +292,7 @@ static default_t cvars[] =
     CONFIG_VARIABLE_INT          (r_liquid_lowerview,                                BOOLVALUEALIAS  ),
     CONFIG_VARIABLE_INT          (r_liquid_swirl,                                    BOOLVALUEALIAS  ),
     CONFIG_VARIABLE_OTHER        (r_lowpixelsize,                                    NOVALUEALIAS    ),
-    CONFIG_VARIABLE_INT          (r_messagescale,                                    BOOLVALUEALIAS  ),
+    CONFIG_VARIABLE_INT          (r_messagescale,                                    SCALEVALUEALIAS ),
     CONFIG_VARIABLE_INT          (r_mirroredweapons,                                 BOOLVALUEALIAS  ),
     CONFIG_VARIABLE_INT          (r_playersprites,                                   BOOLVALUEALIAS  ),
     CONFIG_VARIABLE_INT          (r_rockettrails,                                    BOOLVALUEALIAS  ),
@@ -894,7 +894,8 @@ static void M_CheckCVARs(void)
 
     if (vid_widescreen != false && vid_widescreen != true)
         vid_widescreen = vid_widescreen_default;
-    if (vid_widescreen || r_screensize == r_screensize_max)
+
+    if (vid_widescreen)
     {
         returntowidescreen = true;
         vid_widescreen = false;
@@ -952,12 +953,14 @@ void M_LoadCVARs(char *filename)
 
         if (M_StringCompare(defname, "bind"))
         {
-            bind_cmd_func2("", strparm);
+            if (!togglingvanilla)
+                bind_cmd_func2("", strparm);
             continue;
         }
         else if (M_StringCompare(defname, "alias"))
         {
-            alias_cmd_func2("", strparm);
+            if (!togglingvanilla)
+                alias_cmd_func2("", strparm);
             continue;
         }
 

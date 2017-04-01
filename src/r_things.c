@@ -545,6 +545,7 @@ void R_DrawVisSprite(vissprite_t *vis)
     const mobj_t        *mobj = vis->mobj;
 
     spryscale = vis->scale;
+    dc_colormap = vis->colormap;
 
     if ((mobj->flags2 & MF2_CASTSHADOW) && drawshadows)
     {
@@ -563,7 +564,6 @@ void R_DrawVisSprite(vissprite_t *vis)
     }
 
     colfunc = vis->colfunc;
-    dc_colormap = vis->colormap;
 
     dc_iscale = ABS(xiscale);
     dc_texturemid = vis->texturemid;
@@ -1372,20 +1372,17 @@ static void R_DrawSprite(vissprite_t *spr)
 void R_DrawMasked(void)
 {
     drawseg_t   *ds;
-    int         i;
 
     pausesprites = (menuactive || paused || consoleactive);
     interpolatesprites = (vid_capfps != TICRATE && !pausesprites);
 
     // draw all blood splats
-    i = num_bloodsplatvissprite;
-    while (i > 0)
-        R_DrawBloodSplatSprite(&bloodsplatvissprites[--i]);
+    while (num_bloodsplatvissprite > 0)
+        R_DrawBloodSplatSprite(&bloodsplatvissprites[--num_bloodsplatvissprite]);
 
     // draw all other vissprites back to front
-    i = num_vissprite;
-    while (i > 0)
-        R_DrawSprite(vissprite_ptrs[--i]);
+    while (num_vissprite > 0)
+        R_DrawSprite(vissprite_ptrs[--num_vissprite]);
 
     // render any remaining masked mid textures
     for (ds = ds_p; ds-- > drawsegs;)

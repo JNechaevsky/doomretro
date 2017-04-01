@@ -188,7 +188,7 @@ void P_XYMovement(mobj_t *mo)
             // the skull slammed into something
             mo->flags &= ~MF_SKULLFLY;
             mo->momz = 0;
-            P_SetMobjState(mo, mo->info->spawnstate);
+            P_SetMobjState(mo, mo->info->seestate);
         }
         return;
     }
@@ -479,7 +479,12 @@ void P_ZMovement(mobj_t *mo)
         mo->z = mo->ceilingz - mo->height;
 
         if (!((mo->flags ^ MF_MISSILE) & (MF_MISSILE | MF_NOCLIP)))
-            P_ExplodeMissile(mo);
+        {
+            if (mo->subsector->sector->ceilingpic == skyflatnum)
+                P_RemoveMobj(mo);
+            else
+                P_ExplodeMissile(mo);
+        }
     }
 }
 
@@ -1345,6 +1350,8 @@ mobj_t *P_SpawnMissile(mobj_t *source, mobj_t *dest, mobjtype_t type)
 
     th->momz = (dest->z - source->z) / dist;
     P_CheckMissileSpawn(th);
+
+    th->flags2 |= MF2_MONSTERMISSILE;
 
     return th;
 }

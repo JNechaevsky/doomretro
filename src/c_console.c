@@ -64,19 +64,20 @@
 
 #define CONSOLESPEED            (CONSOLEHEIGHT / 12)
 
+#define CONSOLELINES            (gamestate != GS_TITLESCREEN ? 11 : 27)
 #define CONSOLETEXTX            10
 #define CONSOLETEXTY            8
 #define CONSOLETEXTMAXLENGTH    1024
-#define CONSOLETEXTPIXELWIDTH   (CONSOLEWIDTH - CONSOLETEXTX * 3 - CONSOLESCROLLBARWIDTH + 3)
-#define CONSOLELINES            (gamestate != GS_TITLESCREEN ? 11 : 27)
 #define CONSOLELINEHEIGHT       14
-
-#define CONSOLEINPUTPIXELWIDTH  (CONSOLEWIDTH - CONSOLETEXTX - brandwidth - 2)
 
 #define CONSOLESCROLLBARWIDTH   3
 #define CONSOLESCROLLBARHEIGHT  ((CONSOLELINES - 1) * CONSOLELINEHEIGHT - 1)
 #define CONSOLESCROLLBARX       (CONSOLEWIDTH - CONSOLETEXTX - CONSOLESCROLLBARWIDTH)
 #define CONSOLESCROLLBARY       (CONSOLETEXTY + 1)
+
+#define CONSOLETEXTPIXELWIDTH   (CONSOLEWIDTH - CONSOLETEXTX * 3 - CONSOLESCROLLBARWIDTH + 3)
+
+#define CONSOLEINPUTPIXELWIDTH  (CONSOLEWIDTH - CONSOLETEXTX - brandwidth - 2)
 
 #define CONSOLEDIVIDERWIDTH     (CONSOLETEXTPIXELWIDTH - CONSOLETEXTX + 1)
 
@@ -1143,7 +1144,8 @@ dboolean C_ValidateInput(char *input)
                         && length == strlen(cmd) + 2
                         && consolecmds[i].func1(consolecmds[i].name, consolecheatparm))
                     {
-                        M_StringCopy(consolecheat, cmd, 127);
+                        if (gamestate == GS_LEVEL)
+                            M_StringCopy(consolecheat, cmd, 127);
                         return true;
                     }
                 }

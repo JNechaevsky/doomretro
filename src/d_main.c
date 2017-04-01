@@ -470,7 +470,6 @@ void D_DoAdvanceTitle(void)
 
     players[0].playerstate = PST_LIVE;  // not reborn
     advancetitle = false;
-    usergame = false;                   // no save / end game here
     paused = false;
     gameaction = ga_nothing;
     gamestate = GS_TITLESCREEN;
@@ -1788,14 +1787,14 @@ static void D_DoomMainSetup(void)
         I_Error("Game mode indeterminate. No IWAD file was found. Try\nspecifying one with the "
             "-IWAD command-line parameter.");
 
+    FREEDOOM = (W_CheckNumForName("FREEDOOM") >= 0);
+    FREEDM = (W_CheckNumForName("FREEDM") >= 0);
+
     if (!W_MergeFile(packagewad, true))
         I_Error("%s is invalid.\nPlease reinstall "PACKAGE_NAME".", packagewad);
 
     if (!CheckPackageWADVersion())
         I_Error("%s is the wrong version.\nPlease reinstall "PACKAGE_NAME".", packagewad);
-
-    FREEDOOM = (W_CheckNumForName("FREEDOOM") >= 0);
-    FREEDM = (W_CheckNumForName("FREEDM") >= 0);
 
     DMENUPIC = (W_CheckNumForName("DMENUPIC") >= 0);
     M_DOOM = (W_CheckMultipleLumps("M_DOOM") > 1);

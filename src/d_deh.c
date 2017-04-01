@@ -124,6 +124,7 @@ char    *s_QSAVESPOT = QSAVESPOT;
 char    *s_SAVEDEAD = SAVEDEAD;
 char    *s_QSPROMPT = QSPROMPT;
 char    *s_QLPROMPT = QLPROMPT;
+char    *s_DELPROMPT = "";
 char    *s_NEWGAME = NEWGAME;
 char    *s_NIGHTMARE = NIGHTMARE;
 char    *s_SWSTRING = SWSTRING;
@@ -216,6 +217,7 @@ char    *s_SECRET = "";
 char    *s_GGSAVED = GGSAVED;
 char    *s_GGLOADED = "";
 char    *s_GGAUTOLOADED = "";
+char    *s_GGDELETED = "";
 char    *s_GSCREENSHOT = GSCREENSHOT;
 
 char    *s_ALWAYSRUNOFF = "";
@@ -658,6 +660,7 @@ deh_strs deh_strlookup[] =
     { &s_SAVEDEAD,             "SAVEDEAD"             },
     { &s_QSPROMPT,             "QSPROMPT"             },
     { &s_QLPROMPT,             "QLPROMPT"             },
+    { &s_DELPROMPT,            "DELPROMPT"            },
     { &s_NEWGAME,              "NEWGAME"              },
     { &s_NIGHTMARE,            "NIGHTMARE"            },
     { &s_SWSTRING,             "SWSTRING"             },
@@ -750,6 +753,7 @@ deh_strs deh_strlookup[] =
     { &s_GGSAVED,              "GGSAVED"              },
     { &s_GGLOADED,             "GGLOADED"             },
     { &s_GGAUTOLOADED,         "GGAUTOLOADED"         },
+    { &s_GGDELETED,            "GGDELETED"            },
     { &s_GSCREENSHOT,          "GSCREENSHOT"          },
 
     { &s_ALWAYSRUNOFF,         "ALWAYSRUNOFF"         },
@@ -1577,7 +1581,8 @@ static const struct deh_mobjflags_s deh_mobjflags2[] =
     { "CRUSHABLE",                 MF2_CRUSHABLE                 },
     { "MASSACRE",                  MF2_MASSACRE                  },
     { "DECORATION",                MF2_DECORATION                },
-    { "DONTDRAW",                  MF2_DONTDRAW                  }
+    { "DONTDRAW",                  MF2_DONTDRAW                  },
+    { "MONSTERMISSILE",            MF2_MONSTERMISSILE            }
 };
 
 // STATE - Dehacked block name = "Frame" and "Pointer"

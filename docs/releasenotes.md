@@ -1,3 +1,29 @@
+### DOOM Retro v2.4.5
+
+* The map title in the automap is now positioned correctly when the `r_messagescale` CVAR is `small`.
+* Frames from *DOOM’s* rocket launcher are no longer shown when firing the missile launcher in [*Freedoom*](http://freedoom.github.io/).
+* Entering the `idmypos` cheat will no longer cause a crash.
+* Pressing the <kbd>DEL</kbd> key when in the save and load game menus will now delete the currently selected savegame.
+* The inverted gray color palette is now applied to the sky when the player has the invulnerability power-up, as originally intended.
+* A bug has been fixed whereby the `r_bloodsplats_total` CVAR would be set incorrectly, and blood splats would no longer be spawned, after loading a savegame in some instances.
+* Another 11 map-specific fixes, enabled using the `r_fixmaperrors` CVAR, have been applied to maps in the `doom.wad` and `plutonia.wad` IWADs.
+* The text caret shown when entering a savegame description in the save game menu is now always a vertical line using the dominant color of the character set. (Previously, the `STCFN121` lump was used and in some PWADs that was a “Y” character rather than a vertical pipe.)
+* The sound of the chainsaw will no longer cut off sounds made by the player.
+
+---
+
+###### Monday, March 27, 2017
+
+### DOOM Retro v2.4.4
+
+* A bug has been fixed whereby a crash would often occur when the player died and the `vid_widescreen` CVAR was `off`.
+* The value of the `r_messagescale` CVAR is now displayed correctly in `doomretro.cfg`.
+* Over 200 additional map-specific fixes, enabled using the `r_fixmaperrors` CVAR, have been applied to maps in `doom.wad`.
+
+---
+
+###### Sunday, March 26, 2017
+
 ### DOOM Retro v2.4.3
 
 * Optimizations have been made to further improve the overall performance and stability of *DOOM Retro*.
@@ -9,7 +35,16 @@
 * An `r_messagescale` CVAR has been implemented to allow the scale of messages to be changed between `big` and `small`. It is `big` by default.
 * The messages displayed in the alternate widescreen HUD now use the same font that is used in the console.
 * The player’s path in the automap is now disabled when vanilla mode is enabled.
-* An additional 57 map-specific fixes, enabled using the `r_fixmaperrors` CVAR, have been applied to maps in `doom2.wad`.
+* An additional 300 map-specific fixes, enabled using the `r_fixmaperrors` CVAR, have been applied to maps in both `doom.wad` and `doom2.wad`.
+* The following bugs from *Vanilla DOOM* have been fixed:
+  * Missiles no longer explode when impacting with the sky in some instances.
+  * Lost souls will no longer slowly drift backwards when attacked while charging.
+  * Lost souls will no longer forget their target immediately after attacking them.
+* When using the `kill` CCMD to kill all monsters, all missiles fired by those monsters will now explode at the same time. Also, a `missiles` parameter may now be used to only explode the missiles.
+* `ccmdlist` can now be used as an alternative to the `cmdlist` CCMD, and `explode` as an alternative to the `kill` CCMD.
+* The `idclev` cheat may now be used in the console while no map is loaded.
+* The maximum value the `r_screensize` CVAR can be set to is now `7` rather than `8`. Setting the CVAR to `8` previously had no effect.
+* The player can no longer trigger secrets when in freeze mode.
 
 ---
 

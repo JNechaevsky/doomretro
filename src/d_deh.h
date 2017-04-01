@@ -70,6 +70,7 @@ extern char     *s_PRESSYN;
 extern char     *s_PRESSA;
 extern char     *s_QUITMSG;
 extern char     *s_QLPROMPT;
+extern char     *s_DELPROMPT;
 extern char     *s_NIGHTMARE;
 extern char     *s_SWSTRING;
 extern char     *s_MSGOFF;
@@ -155,6 +156,7 @@ extern char     *s_SECRET;
 extern char     *s_GGSAVED;
 extern char     *s_GGLOADED;
 extern char     *s_GGAUTOLOADED;
+extern char     *s_GGDELETED;
 extern char     *s_GSCREENSHOT;
 
 extern char     *s_ALWAYSRUNOFF;

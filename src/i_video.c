@@ -627,7 +627,7 @@ static void I_GetEvent(void)
                         case SDL_WINDOWEVENT_SIZE_CHANGED:
                             if (!vid_fullscreen)
                             {
-                                char    size[16] = "";
+                                char    size[16];
 
                                 windowwidth = Event->window.data1;
                                 windowheight = Event->window.data2;
@@ -646,7 +646,7 @@ static void I_GetEvent(void)
                         case SDL_WINDOWEVENT_MOVED:
                             if (!vid_fullscreen && !manuallypositioning)
                             {
-                                char    pos[16] = "";
+                                char    pos[16];
 
                                 windowx = Event->window.data1;
                                 windowy = Event->window.data2;
@@ -1682,12 +1682,6 @@ void I_ToggleWidescreen(dboolean toggle)
     if (toggle)
     {
         vid_widescreen = true;
-
-        if (returntowidescreen && r_screensize == r_screensize_max)
-        {
-            r_screensize = r_screensize_max - 1;
-            R_SetViewSize(r_screensize);
-        }
 
         if (SDL_RenderSetLogicalSize(renderer, SCREENWIDTH, SCREENHEIGHT) < 0)
             I_SDLError("SDL_RenderSetLogicalSize");

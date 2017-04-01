@@ -60,7 +60,7 @@
 // Locally used constants, shortcuts.
 //
 #define HU_TITLEX       3
-#define HU_TITLEY       (ORIGINALHEIGHT - 32 * (r_screensize < r_screensize_max) - hu_font[0]->height - 2)
+#define HU_TITLEY       (ORIGINALHEIGHT - ORIGINALSBARHEIGHT - hu_font[0]->height - 2)
 
 static player_t         *plr;
 patch_t                 *hu_font[HU_FONTSIZE];
@@ -103,12 +103,15 @@ static patch_t          *stdisk;
 dboolean                drawdisk;
 
 extern dboolean         messages;
-extern dboolean         vid_widescreen;
+extern dboolean         r_messagescale;
 extern dboolean         r_translucency;
+extern dboolean         vid_widescreen;
+
 extern int              cardsfound;
 extern patch_t          *tallnum[10];
 extern patch_t          *tallpercent;
 extern dboolean         emptytallpercent;
+extern int              caretcolor;
 
 void (*hudfunc)(int, int, patch_t *, byte *);
 void (*hudnumfunc)(int, int, patch_t *, byte *);
@@ -207,6 +210,7 @@ void HU_Init(void)
     {
         M_snprintf(buffer, 9, "STCFN%.3d", j++);
         hu_font[i] = W_CacheLumpName(buffer, PU_STATIC);
+        caretcolor = FindDominantColor(hu_font[i]);
     }
 
     if (W_CheckMultipleLumps("STTMINUS") > 1 || W_CheckMultipleLumps("STTNUM0") == 1)
@@ -879,9 +883,30 @@ void HU_DrawDisk(void)
 
 void HU_Drawer(void)
 {
+    w_message.l->x = HU_MSGX;
+    w_message.l->y = HU_MSGY;
+
+    if (r_messagescale == r_messagescale_small)
+    {
+        w_message.l->x = HU_MSGX * SCREENSCALE;
+        w_message.l->y = HU_MSGY * SCREENSCALE;
+    }
+
     HUlib_drawSText(&w_message, message_external);
+
     if (automapactive)
+    {
+        w_title.x = HU_TITLEX;
+        w_title.y = ORIGINALHEIGHT - ORIGINALSBARHEIGHT - hu_font[0]->height - 2;
+
+        if (r_messagescale == r_messagescale_small)
+        {
+            w_title.x = HU_TITLEX * SCREENSCALE;
+            w_title.y = SCREENHEIGHT - SBARHEIGHT - hu_font[0]->height - 2 * SCREENSCALE;
+        }
+
         HUlib_drawTextLine(&w_title, false);
+    }
     else
     {
         if (vid_widescreen && r_hud)
@@ -893,7 +918,18 @@ void HU_Drawer(void)
         }
 
         if (mapwindow)
+        {
+            w_title.x = HU_TITLEX;
+            w_title.y = ORIGINALHEIGHT - ORIGINALSBARHEIGHT - hu_font[0]->height - 2;
+
+            if (r_messagescale == r_messagescale_small)
+            {
+                w_title.x = HU_TITLEX * SCREENSCALE;
+                w_title.y = SCREENHEIGHT - SBARHEIGHT - hu_font[0]->height - 2 * SCREENSCALE;
+            }
+
             HUlib_drawTextLine(&w_title, true);
+        }
     }
 }
 
@@ -1022,11 +1058,7 @@ void HU_PlayerMessage(char *message, dboolean external)
     C_PlayerMessage(buffer);
 
     if (plr && !consoleactive && !message_dontfuckwithme)
-    {
-        plr->message = buffer;
-        message_external = (external && mapwindow);
-    }
-
+        HU_SetPlayerMessage(buffer, external);
 }
 
 void HU_ClearMessages(void)
