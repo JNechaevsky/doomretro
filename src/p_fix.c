@@ -1127,8 +1127,6 @@ linefix_t linefix[] =
     { pack_plut,        1,  20,     333,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  20,     511,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  20,     517,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
-    { pack_plut,        1,  20,     876,    0, "",         "",            "",            DEFAULT,        72, DEFAULT,                   DEFAULT,                                    DEFAULT },
-    { pack_plut,        1,  20,     882,    0, "",         "",            "",            DEFAULT,        72, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  20,     904,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  20,    1110,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  20,    1115,    1, "",         "A-RAIL1",     "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
@@ -1204,7 +1202,6 @@ linefix_t linefix[] =
     { pack_plut,        1,  30,     730,    0, "ROCKRED1", "",            "ROCKRED1",    DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
 
     { pack_plut,        1,  31,     682,    1, "",         "MIDBARS1",    "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
-    { pack_plut,        1,  31,     929,    0, "",         "",            "",            DEFAULT,        54, DEFAULT,                   DEFAULT,                                    DEFAULT },
 
     { pack_plut,        1,  32,     569,    0, "A-MOSROK", "",            "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
     { pack_plut,        1,  32,     570,    0, "A-MOSROK", "",            "",            DEFAULT,   DEFAULT, DEFAULT,                   DEFAULT,                                    DEFAULT },
@@ -1381,14 +1378,10 @@ sectorfix_t sectorfix[] =
     { doom,             2,   4,    173, "BLOOD3",  "",             DEFAULT,       DEFAULT, DEFAULT,                           DEFAULT },
     { doom,             2,   4,    177, "BLOOD3",  "",             DEFAULT,       DEFAULT, DEFAULT,                           DEFAULT },
 
-<<<<<<< HEAD
-    { doom,             3,   5,    161, "",        "",                   0,       DEFAULT, DEFAULT, DEFAULT },
-=======
     { doom,             3,   5,    161, "",        "",                   0,       DEFAULT, DEFAULT,                           DEFAULT },
 
     { doom,             3,   7,     20, "",        "",             DEFAULT,       DEFAULT, DEFAULT,                                 0 },
     { doom,             3,   7,     23, "",        "",             DEFAULT,       DEFAULT, DEFAULT,                                 0 },
->>>>>>> refs/remotes/bradharding/master
 
     { doom,             4,   3,    124, "",        "",             DEFAULT,       DEFAULT, Normal,                            DEFAULT },
     { doom,             4,   3,    125, "",        "",             DEFAULT,       DEFAULT, Normal,                            DEFAULT },
@@ -1457,14 +1450,7 @@ sectorfix_t sectorfix[] =
     { pack_plut,        1,  16,     95, "",        "",             DEFAULT,       DEFAULT, DamageNegative10Or20PercentHealth, DEFAULT },
     { pack_plut,        1,  16,     96, "",        "",             DEFAULT,       DEFAULT, DamageNegative10Or20PercentHealth, DEFAULT },
 
-<<<<<<< HEAD
-    { pack_plut,        1,  16,     97, "",        "NUKAGE1",      DEFAULT,       DEFAULT, DEFAULT, DEFAULT },
-    { pack_plut,        1,  16,    104, "",        "NUKAGE1",      DEFAULT,       DEFAULT, DEFAULT, DEFAULT },
-
-    { pack_plut,        1,  26,    156, "",        "",             DEFAULT,       DEFAULT,       0, DEFAULT },
-=======
     { pack_plut,        1,  26,    156, "",        "",             DEFAULT,       DEFAULT, Normal,                            DEFAULT },
->>>>>>> refs/remotes/bradharding/master
 
     { pack_tnt,         1,   3,    260, "",        "CEIL3_3",      DEFAULT,       DEFAULT, DEFAULT,                           DEFAULT },
     { pack_tnt,         1,   3,    329, "",        "CEIL3_3",      DEFAULT,       DEFAULT, DEFAULT,                           DEFAULT },
